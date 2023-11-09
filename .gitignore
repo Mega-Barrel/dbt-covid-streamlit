@@ -1,6 +1,6 @@
 
 # credential file
-.ev
+.env
 
 # package folder
 dbt-covid-env
