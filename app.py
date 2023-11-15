@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 import streamlit as st
+import plotly.express as px
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
@@ -25,10 +26,22 @@ port = os.environ.get('PORT')
 # DB engine
 engine = create_engine(f"postgresql://{user}:{password}@{host}:{port}/{database}")
 
+# App page configuration
+st.set_page_config(
+    page_title="Covid Analysis",
+    page_icon="🦠",
+    layout="wide",
+    menu_items={
+        'Report a bug': "https://github.com/Mega-Barrel/dbt-covid-streamlit/issues/new",
+        'About': "# dbt + streamlit app. This is an *extremely* cool app!"
+    }
+)
+
+# App title
 st.title('dbt-Covid 🦠 Analysis')
 
 # Streamlit Tabs
-about, analysis, raw_data = st.tabs([
+about, analysis, data = st.tabs([
     'About',
     'Analysis',
     'Raw Data'
@@ -36,13 +49,26 @@ about, analysis, raw_data = st.tabs([
 
 with analysis:
     st.write('Analysis page')
+    fig= graphs.generate_fct_monthly_plot(engine, pd, px)
+    st.plotly_chart(fig, use_container_width=True, config = {'displayModeBar': False})
+
+    fig= graphs.generate_fct_monthly_death_rate(engine, pd, px)
+    st.plotly_chart(fig, use_container_width=True, config = {'displayModeBar': False})
+
 
 with about:
     st.write('About page')
 
-with raw_data:
+with data:
     # Get data from DB
     with st.chat_message("user"):
-        dataframe = pd.read_sql_table('covid_data', con=engine, schema='public')
         st.write("Raw Data 📖")
-        st.dataframe(dataframe)
+        raw_data.raw_table(st, engine, pd)
+    
+    with st.chat_message("user"):
+        st.write("Staging Tables 💻")
+        raw_data.staging_table(st, engine, pd)
+    
+    with st.chat_message("user"):
+        st.write("Marts Tables 💻")
+        raw_data.mart_table(st, engine, pd)
