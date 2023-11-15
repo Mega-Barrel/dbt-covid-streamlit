@@ -4,3 +4,6 @@
 
 # package folder
 dbt-covid-env
+
+# pycache folders
+__pycache__
