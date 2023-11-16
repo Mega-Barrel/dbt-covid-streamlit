@@ -41,13 +41,13 @@ st.set_page_config(
 st.title('dbt-Covid 🦠 Analysis')
 
 # Streamlit Tabs
-about, analysis, data = st.tabs([
+about_page, analysis_page, data_page = st.tabs([
     'About',
     'Analysis',
     'Raw Data'
 ])
 
-with analysis:
+with analysis_page:
     st.write('Analysis page')
     fig= graphs.generate_fct_monthly_plot(engine, pd, px)
     st.plotly_chart(fig, use_container_width=True, config = {'displayModeBar': False})
@@ -56,10 +56,10 @@ with analysis:
     st.plotly_chart(fig, use_container_width=True, config = {'displayModeBar': False})
 
 
-with about:
-    st.write('About page')
+with about_page:
+    about.get_about(st)
 
-with data:
+with data_page:
     # Get data from DB
     with st.chat_message("user"):
         st.write("Raw Data 📖")
